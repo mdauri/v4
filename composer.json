@@ -1,0 +1,12 @@
+{
+    "require": {
+        "firebase/php-jwt": "^5.0",
+        "zendframework/zend-http": "^2.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "oop\\" : "oop",
+            "ado\\" : "app.ado"
+        }
+    }
+}
