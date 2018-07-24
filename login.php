@@ -12,6 +12,7 @@ use Firebase\JWT\JWT;
 use ado\TRecord;
 use ado\TTransaction;
 use ado\TFilter;
+use ado\TCriteria;
 use ado\TLoggerTXT;
 use ado\TRepository;
 /* 
@@ -38,7 +39,7 @@ try
     $criteria = new TCriteria;
     //filtra por username
     $criteria->add(new TFilter('username', '=', 'pos'));
-
+    
     //instancia um repositorio para usuário
     $repository = new TRepository('Users');
     if ($users) {
