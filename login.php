@@ -9,7 +9,7 @@ require_once('vendor/autoload.php');
 
 use Zend\Http\PhpEnvironment\Request;
 use Firebase\JWT\JWT;
-use ado\TRecord;
+//use ado\TRecord;
 use ado\TTransaction;
 use ado\TFilter;
 use ado\TCriteria;
@@ -27,7 +27,7 @@ use ado\TRepository;
 //   }
 // }
 
-class UserRecord extends TRecord {}
+class UsersRecord extends ado\TRecord {}
 
 //obtem objetos do banco de dados
 try
@@ -38,10 +38,12 @@ try
     TTransaction::setLogger(new TLoggerTXT('c:\temp\poscontrol.txt'));
     $criteria = new TCriteria;
     //filtra por username
-    $criteria->add(new TFilter('username', '=', 'pos'));
+    $criteria->add(new TFilter('email', '=', 'pos'));
     
     //instancia um repositorio para usuário
     $repository = new TRepository('Users');
+    // retorna todos os objetos que satisfem o critério
+    $users = $repository->load($criteria);
     if ($users) {
         foreach ($users as $user) {
             echo ' UsersID  : ' . $user->UsersID;

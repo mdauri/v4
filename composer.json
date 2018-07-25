@@ -8,5 +8,8 @@
             "oop\\" : "oop",
             "ado\\" : "app.ado"
         }
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.3"
     }
 }
