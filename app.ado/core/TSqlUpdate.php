@@ -1,10 +1,10 @@
 <?php
-namespace ado;
+namespace ado\core;
 /*
-* classe TSqlInsert
-* Esta classe provê meios para manipulação de uma instrução de INSERT no banco de dados
-*/
-final class TSqlInsert extends TSqlInstruction
+ * classe TSqlUpdate
+ * Esta classe provê meios para manipulação de uma instrução de UPDATE no banco de dados
+ */
+final class TSqlUpdate extends TSQLInstruction
 {
   /*
    * método setRowData()
@@ -30,33 +30,29 @@ final class TSqlInsert extends TSqlInstruction
       //caso seja NULL
       $this->columnValues[$column] = "NULL";
     }
-  } 
-
-  /*
-   * metodo setCriteria($criteria)
-   * não existe no contexto desta classe, logo irá lancar um erro se for executado
-   */
-  public function setCriteria($criteria)
-  {
-    // Lança o erro
-    throw new Exception("Cannot call setCriteria from " . __CLASS__);
   }
 
   /*
    * metodo getInstruction()
-   * retorna a instrução de INSERT em forma de string.
+   * retorna a instrução de UPDATE em forma de string
    */
   public function getInstruction()
   {
-    $this->sql = "INSERT INTO {$this->entity} (";
-    // monta uma strinf contendo os nomes de colunas
-    $columns = implode(', ', array_keys($this->columnValues));
-    // monta uma string contendo os valores
-    $values = implode(', ', array_values($this->columnValues));
-    $this->sql .= $columns . ')';
-    $this->sql .= " VALUES ({$values})";
+    // monta a string de UPDATE
+    $this->sql = "UPDATE {$this->entity}";
+    //monta os pares: coluna=valor,...
+    if ($this->columnValues) {
+      foreach ($this->columnValues as $column => $value) {
+        $set[] = "{$column} = {$value}";
+      }
+    }
+    $this->sql .= ' SET ' . implode(', ', $set);
 
+    //retorn a clausul WHERE do objeto $this->criteria
+    if ($this->criteria) {
+      $this->sql .= ' WHERE ' .$this->criteria->dump();
+    }
     return $this->sql;
-  }
+  } 
 }
 ?>

@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 /*
 * classe TFilter
 * Esta classe provê uma interface para definição de filtros de seleção

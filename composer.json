@@ -6,7 +6,9 @@
     "autoload": {
         "psr-4": {
             "oop\\" : "oop",
-            "ado\\" : "app.ado"
+            "ado\\" : "app.ado",
+            "app\\" : "app.config",
+            "util\\": "app.util"
         }
     },
     "require-dev": {

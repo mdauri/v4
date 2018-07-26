@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 /*
  * classe TSqlDelete
  * Esta classe provê meios para manipulação de uma instrução de DELETE no banco de dados

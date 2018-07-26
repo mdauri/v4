@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 /*
  * classe TLoggerXML
  * implementa o algoritimo de LOG em XML

@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 /*
 * classe TCriteria
 * Esta classe provê uma interface utilizada para definição de cirtérios
@@ -25,7 +25,10 @@ class TCriteria extends TExpression
 
     //agrega o resultado da expressão à lista de expressões
     $this->expressions[] = $expression;
-    $this->operators[] = $operator;
+    if (isset($operator)) {
+      $this->operators[] = $operator;
+    }
+    
   }
   /*
    * metodo dump()
@@ -33,6 +36,7 @@ class TCriteria extends TExpression
    */
   public function dump()
   {
+    $result = '';
     //concatena a lista de expressões
     if (is_Array($this->expressions)) {
       foreach ($this->expressions as $i => $expression) {

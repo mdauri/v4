@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 /*
 * classe TExpression
 * classe abstrata para gerenciar expressoes

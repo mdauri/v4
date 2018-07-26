@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 /*
 * classe TSqlInstruction
 * Esta classe provê os métodos em comum entre todas as instruções

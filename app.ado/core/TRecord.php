@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 
 /*
  * classe TRecord
@@ -15,11 +15,11 @@ abstract class TRecord
    * instancia um Active Record. Se passado o $id, já carrega o objeto
    * @param[$id] = ID do objeto
    */
-  public function __construct($id = NULL) 
+  public function __construct($nomecampo = NULL, $id = NULL) 
   {
     if ($id) {  // se o ID for informado
       // carrega o objeto correspondente
-      $object = $this->load($id);
+      $object = $this->load($nomecampo,$id);
       if ($object) {
         $this->fromArray($object->toArray());
       }
@@ -149,9 +149,10 @@ abstract class TRecord
    * metodo load()
    * recupera (retorna) um objeto da base de dados
    * através de seu ID e instancia ele na memória
+   * @param $nomecampo = Nome do campo na tabela a ser pesquisado
    * @param $id = ID do objeto
    */
-  public function load($id)
+  public function load($nomecampo, $id)
   {
     //instancia instrução de SELECT
     $sql = new TSqlSelect;
@@ -160,7 +161,7 @@ abstract class TRecord
 
     //cria critério de seleção baseado no ID
     $criteria = new TCriteria;
-    $criteria->add(new TFilter('id', '=', $id));
+    $criteria->add(new TFilter($nomecampo, '=', $id));
     // define o critério de seleção de dados
     $sql->setCriteria($criteria);
     // obtem trasação ativa

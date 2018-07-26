@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 /*
  * classe TConnection
  * gerencia conexões com bancos de dados através de arquivos de configuração.
@@ -21,10 +21,11 @@ final class TConnection
   public static function open($name)
   {
     // verifica se existe aquivo de configuração para este banco de dados
-    chdir(dirname(__DIR__));
-    if (file_exists("app.config/{$name}.ini")) {
+    $pasta = __DIR__;
+    
+    if (file_exists("./app.config/{$name}.ini")) {
       // lê o INI e retorna um array
-      $db = parse_ini_file("app.config/{$name}.ini");
+      $db = parse_ini_file("./app.config/{$name}.ini");
     } else {
       // se nao existir, lança erro
       throw new \Exception("Arquivo '$name' não encontrado");      

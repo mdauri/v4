@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 /*
  * classe TLoggerHTML
  * implementa o algoritimo de LOG em HTML

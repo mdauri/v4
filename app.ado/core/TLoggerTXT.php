@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 /*
  * classe TLoggerTXT
  * implementa o algoritimo de LOG em TXT

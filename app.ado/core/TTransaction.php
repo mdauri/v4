@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 /*
  * classe TTransaction
  * esta classe provê os métodos necessários para manipular transações

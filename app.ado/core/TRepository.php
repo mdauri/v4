@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 /*
  * classe TRepository
  * esta classe provê os métodos necessários para manipular coleções de objetos.

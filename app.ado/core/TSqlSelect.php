@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 /*
  * classe TSqlSelect
  * Esta classe provÊ meios para manipulação de uma instrução SELECT no banco de dados

@@ -1,5 +1,5 @@
 <?php
-namespace ado;
+namespace ado\core;
 /* 
  * classe TLogger
  * Esta classe provê uma interface abstrata para definicao de algoritimos de LOG
