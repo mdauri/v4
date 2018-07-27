@@ -8,7 +8,6 @@ require_once 'vendor/autoload.php';
 
 use Zend\Http\PhpEnvironment\Request;
 use Firebase\JWT\JWT;
-use ado\core\TRecord;
 use ado\core\TTransaction;
 use ado\core\TFilter;
 use ado\core\TCriteria;
@@ -16,6 +15,8 @@ use ado\core\TLoggerTXT;
 use ado\core\TRepository;
 use app\TApp;
 use util\TW2Encrypter;
+
+use ado\user\TUserService;
 
 $request = new Request();
 /*
@@ -148,50 +149,6 @@ if ($request->isPost()) {
 
 function getUser($username)
 {
-    class CompanyGroupRecord extends TRecord{}
-    class CompanyUsersRecord extends TRecord{}
-    class AccessLevelRecord extends TRecord{}
-    class CompanyRecord extends TRecord{}
-    
-    class UsersRecord extends TRecord 
-    {
-        /*
-         * metodo get_companies()
-         * executado sempre que for acessada a propriedade "companies"
-         */
-        function get_Companies()
-        {
-            // cria um critério de seleção
-            $criteria = new TCriteria;
-            //filtra por codigo de Usuario
-            $criteria->add(new TFilter('UsersID','=',$this->UsersID));
-
-            //instancia repositorio CompanyUsers
-            $repository = new TRepository('CompanyUsers');
-
-            $auxcompanies = $repository->load($criteria);
-            $Companies =  array();
-            foreach ($auxcompanies as $company) {
-                $objCompany = new CompanyRecord('CompanyID', $company->CompanyID);
-                $Companies[] = $objCompany;
-            };
-            //retorna todas as empresas que satisfazem o criterio
-            return $Companies;//$repository->load($criteria);
-        }
-        
-        function get_CompanyGroup()
-        {
-            $companygroup = new CompanyGroupRecord('CompanyGroupID',$this->CompanyGroupID);
-            return $companygroup;
-        }
-
-        function get_AccessLevel()
-        {
-            $acesslevel = new AccessLevelRecord('AccessLevelID',$this->AccessLevelID);
-            return $acesslevel;
-        }
-    }
-
     //obtem objetos do banco de dados
     try
     {
@@ -199,10 +156,12 @@ function getUser($username)
         TTransaction::open('poscontrolconfig');
         //define o arquivo de LOG
         TTransaction::setLogger(new TLoggerTXT('c:\temp\poscontrol.txt'));
+        
+        $userservice = new ado\user\TUserService;
+        $user = $userservice->getUser($username);
         $criteria = new TCriteria;
         //filtra por username
         $criteria->add(new TFilter('email', '=', $username));
-        
         //instancia um repositorio para usuário
         $repository = new TRepository('Users');
         // retorna todos os objetos que satisfem o critério

@@ -76,6 +76,10 @@ abstract class TRecord
   {
     // obtem o nome da classe
     $classe = strtolower(get_class($this));
+    
+    //removendo "\ado\model\"
+    $classe = substr(strrchr($classe, "\\"), 1);
+    
     // retorna o nome da classe - "Record"
     return substr($classe, 0, -6);
   }

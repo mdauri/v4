@@ -7,6 +7,7 @@ namespace ado\core;
 final class TRepository
 {
   private $class; //nome da classe manipulada pelo repositorio
+  private $fullyqualifiedclass; //nome completo da classe
   /*
    * metodo __construct
    * intancia um Repositorio de objetos
@@ -15,6 +16,7 @@ final class TRepository
   function __construct($class)
   {
     $this->class = $class;
+    $this->fullyqualifiedclass = '\ado\model\\' . $class;
   }
   /*
    * método load()
@@ -41,7 +43,8 @@ final class TRepository
 
       if ($result) {
         //percorre os resultados da consulta, retornando um objeto
-        while ($row = $result->fetchObject($this->class . 'Record')) {
+        //while ($row = $result->fetchObject($this->class . 'Record')) {
+        while ($row = $result->fetchObject($this->fullyqualifiedclass . 'Record')) {
           //armazena no array $results;
           $results[] = $row;
         }
