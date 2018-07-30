@@ -25,9 +25,9 @@ class TCriteria extends TExpression
 
     //agrega o resultado da expressão à lista de expressões
     $this->expressions[] = $expression;
-    if (isset($operator)) {
+    //if (isset($operator)) {
       $this->operators[] = $operator;
-    }
+    //}
     
   }
   /*

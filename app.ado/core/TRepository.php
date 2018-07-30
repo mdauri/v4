@@ -8,15 +8,17 @@ final class TRepository
 {
   private $class; //nome da classe manipulada pelo repositorio
   private $fullyqualifiedclass; //nome completo da classe
+  private $database; //banco de dados
   /*
    * metodo __construct
    * intancia um Repositorio de objetos
    * @param $class = Classe dos Objetos
    */
-  function __construct($class)
+  function __construct($database, $class)
   {
     $this->class = $class;
     $this->fullyqualifiedclass = '\ado\model\\' . $class;
+    $this->database = $database;
   }
   /*
    * método load()
@@ -33,10 +35,20 @@ final class TRepository
     // atribui o critério passado como parâmetro
     $sql->setCriteria($criteria);
 
-    //obetem transação ativa
-    if ($conn = TTransaction::get()) {
+    //obtem transação ativa
+    if (is_null($this->database)) {
+      $conn = TTransaction::get();
+    } else {
+      $conn = TTransaction::getdb($this->database);
+    }
+    
+    if ($conn) {
       // registra mensagem de log
-      TTransaction::log($sql->getInstruction());
+      if (is_null($this->database)) {
+        TTransaction::log($sql->getInstruction());
+      } else {
+        TTransaction::logdb($sql->getInstruction(),$this->database);
+      }      
 
       //executa a consulta no banco de dados
       $result = $conn->Query($sql->getInstruction());
@@ -53,7 +65,7 @@ final class TRepository
     }
     else {
       // se nao tiver transação, retorna uma exceção
-      throw new Exception("Não há transação ativa!!");
+      throw new \Exception("Não há transação ativa!!");
     }
   }
   /*
@@ -71,7 +83,8 @@ final class TRepository
     $sql->setCriteria($criteria);
 
     //obtem transacao ativa
-    if ($conn = TTransaction::get()) {
+    //if ($conn = TTransaction::get()) {
+    if ($conn = TTransaction::getdb($this->database)) {
       // registra mensagem de log
       TTransaction::log($sql->getInstruction());
       //executa a instrução de DELETE
@@ -98,7 +111,8 @@ final class TRepository
     $sql->setCriteria($criteria);
 
     //obetem transação ativa
-    if ($conn = TTransaction::get()) {
+    //if ($conn = TTransaction::get()) {
+    if ($conn = TTransaction::getdb($this->database)) {
       // registra mensagem de log
       TTransaction::log($sql->getInstruction());
       //executa a instrução de SELECT

@@ -15,11 +15,16 @@ abstract class TRecord
    * instancia um Active Record. Se passado o $id, já carrega o objeto
    * @param[$id] = ID do objeto
    */
-  public function __construct($nomecampo = NULL, $id = NULL) 
+  public function __construct($nomebd = NULL, $nomecampo = NULL, $id = NULL) 
   {
+    
     if ($id) {  // se o ID for informado
       // carrega o objeto correspondente
-      $object = $this->load($nomecampo,$id);
+      if ($nomebd) {
+        $object = $this->loaddb($nomebd, $nomecampo,$id);
+      } else {
+        $object = $this->load($nomecampo,$id);
+      }      
       if ($object) {
         $this->fromArray($object->toArray());
       }
@@ -170,6 +175,43 @@ abstract class TRecord
     $sql->setCriteria($criteria);
     // obtem trasação ativa
     if ($conn = TTransaction::get()) {
+      //cria mensagem de log e executa a consulta
+      TTransaction::log($sql->getInstruction());
+      $result = $conn->Query($sql->getInstruction());
+      // se retornou algum dado
+      if ($result) {
+        //retorna os dados em forma de objeto
+        $object = $result->fetchObject(get_class($this));
+      }
+      return $object;
+    }
+    else {
+      // se não tiver transação, retorna uma exceção
+      throw new Exception("Não há transação ativa!!!");
+    }
+  }
+  /*
+   * metodo loaddb()
+   * recupera (retorna) um objeto da base de dados
+   * através de seu ID e instancia ele na memória
+   * @param $nomedb = Nome do banco de dados
+   * @param $nomecampo = Nome do campo na tabela a ser pesquisado
+   * @param $id = ID do objeto
+   */
+  public function loaddb($nomedb, $nomecampo, $id)
+  {
+    //instancia instrução de SELECT
+    $sql = new TSqlSelect;
+    $sql->setEntity($this->getEntity());
+    $sql->addColumn('*');
+
+    //cria critério de seleção baseado no ID
+    $criteria = new TCriteria;
+    $criteria->add(new TFilter($nomecampo, '=', $id));
+    // define o critério de seleção de dados
+    $sql->setCriteria($criteria);
+    // obtem trasação ativa
+    if ($conn = TTransaction::getdb($nomedb)) {
       //cria mensagem de log e executa a consulta
       TTransaction::log($sql->getInstruction());
       $result = $conn->Query($sql->getInstruction());

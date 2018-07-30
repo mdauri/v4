@@ -1,6 +1,7 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+//error_reporting(E_ALL ^ E_NOTICE);
+//error_reporting(E_ALL);
+//ini_set('display_errors', 1);
 
 chdir(dirname(__DIR__));
 
@@ -9,10 +10,7 @@ require_once 'vendor/autoload.php';
 use Zend\Http\PhpEnvironment\Request;
 use Firebase\JWT\JWT;
 use ado\core\TTransaction;
-use ado\core\TFilter;
-use ado\core\TCriteria;
 use ado\core\TLoggerTXT;
-use ado\core\TRepository;
 use app\TApp;
 use util\TW2Encrypter;
 
@@ -48,6 +46,14 @@ if ($request->isPost()) {
                     foreach ($User->Companies as $company) {
                         $tmpCompaniesID[] = $company->CompanyID;
                         $tmpCompaniesName[] = $company->Trademark;
+
+                        $auxcompany['CompanyID'] = $company->CompanyID;
+                        $auxcompany['CompanyName'] = $company->Trademark;
+                        $auxcompany['Cnpj'] = $company->Cnpj;
+                        $auxcompany['BaseName'] = $company->BaseName;
+                        $auxcompany['NFCE'] = $company->NFCE;
+                        
+                        $CompaniesTMP[] = $auxcompany;
                     };
             
                     if ($User->AccessLevel->ShortName !== 'EST'){
@@ -96,7 +102,6 @@ if ($request->isPost()) {
                     $expire     = $notBefore + 3600; // Adding 60 seconds
                     $serverName = $app->POSControlConfig->serverName; //$config->get('serverName');
 
-                    $CompaniesTMP = json_encode($tmpCompaniesID);
                     $data = [
                         'iat'  => $issuedAt,         // Issued at: time when the token was generated
                         'jti'  => $tokenId,          // Json Token Id: an unique identifier for the token
@@ -153,33 +158,23 @@ function getUser($username)
     try
     {
         //inicia transação com o banco PosControl
-        TTransaction::open('poscontrolconfig');
+        TTransaction::opendb('poscontrolconfig');
+        TTransaction::opendb('poscontrol');
+
         //define o arquivo de LOG
-        TTransaction::setLogger(new TLoggerTXT('c:\temp\poscontrol.txt'));
+        TTransaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrol.txt'), 'poscontrol');
+        TTransaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrolconfig.txt'),'poscontrolconfig');
         
-        $userservice = new ado\user\TUserService;
+        $userservice = new ado\model\TUserService;
         $user = $userservice->getUser($username);
-        $criteria = new TCriteria;
-        //filtra por username
-        $criteria->add(new TFilter('email', '=', $username));
-        //instancia um repositorio para usuário
-        $repository = new TRepository('Users');
-        // retorna todos os objetos que satisfem o critério
-        $users = $repository->load($criteria);
-        if ($users) {
-            if (count($users) == 1) {
-                $user = $users[0];                
-            } else {
-                unset($user);
-            }
-        }
+
         return $user;
     }
     catch(Exception $e)
     {
         echo 'Erro ' . $e->getMessage();
-        //desfaz todas as alterações no banco de dados
-        TTransaction::rollback();
+        TTransaction::rollbackdb('poscontrol');
+        TTransaction::rollbackdb('poscontrolconfig');
     }
 }
 

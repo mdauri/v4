@@ -14,6 +14,7 @@ class CompanyGroupRecord extends TRecord{}
 class CompanyUsersRecord extends TRecord{}
 class AccessLevelRecord extends TRecord{}
 class CompanyRecord extends TRecord{}
+class PosPdvConfigRecord extends TRecord{}
 
 class UsersRecord extends TRecord 
 {
@@ -29,12 +30,26 @@ class UsersRecord extends TRecord
         $criteria->add(new TFilter('UsersID','=',$this->UsersID));
 
         //instancia repositorio CompanyUsers
-        $repository = new TRepository('CompanyUsers');
+        $repository = new TRepository('poscontrolconfig','CompanyUsers');
 
         $auxcompanies = $repository->load($criteria);
         $Companies =  array();
         foreach ($auxcompanies as $company) {
-            $objCompany = new CompanyRecord('CompanyID', $company->CompanyID);
+            $objCompany = new CompanyRecord('poscontrolconfig','CompanyID', $company->CompanyID);
+
+            $criteria1 = new TCriteria;
+            $criteria1->add(new TFilter('CompanyID', '=', $company->CompanyID));
+            $criteria1->add(new TFilter('Value', '=', 'S'));
+            $criteria1->add(new TFilter('Id', '=', 66));
+            $repository = new TRepository('poscontrol','PosPdvConfig');
+            $pospdvconfig = $repository->load($criteria1);
+            if ($pospdvconfig) {
+                $objCompany->NFCE = True;
+            } else {
+                $objCompany->NFCE = False;
+            }
+
+
             $Companies[] = $objCompany;
         };
         //retorna todas as empresas que satisfazem o criterio
@@ -43,13 +58,13 @@ class UsersRecord extends TRecord
     
     function get_CompanyGroup()
     {
-        $companygroup = new CompanyGroupRecord('CompanyGroupID',$this->CompanyGroupID);
+        $companygroup = new CompanyGroupRecord('poscontrolconfig','CompanyGroupID',$this->CompanyGroupID);
         return $companygroup;
     }
 
     function get_AccessLevel()
     {
-        $acesslevel = new AccessLevelRecord('AccessLevelID',$this->AccessLevelID);
+        $acesslevel = new AccessLevelRecord('poscontrolconfig','AccessLevelID',$this->AccessLevelID);
         return $acesslevel;
     }
 }
@@ -66,7 +81,7 @@ final class TUserService {
             $criteria->add(new TFilter('email', '=', $username));
             
             //instancia um repositorio para usuário
-            $repository = new TRepository('Users');
+            $repository = new TRepository('poscontrolconfig','Users');
             // retorna todos os objetos que satisfem o critério
             $users = $repository->load($criteria);
             if ($users) {

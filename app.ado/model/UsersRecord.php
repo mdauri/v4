@@ -10,6 +10,7 @@ class CompanyGroupRecord extends TRecord{}
 class CompanyUsersRecord extends TRecord{}
 class AccessLevelRecord extends TRecord{}
 class CompanyRecord extends TRecord{}
+class PosPdvConfigRecord extends TRecord{}
 
 class UsersRecord extends TRecord 
 {
@@ -25,12 +26,12 @@ class UsersRecord extends TRecord
         $criteria->add(new TFilter('UsersID','=',$this->UsersID));
 
         //instancia repositorio CompanyUsers
-        $repository = new TRepository('CompanyUsers');
+        $repository = new TRepository('poscontrol','CompanyUsers');
 
         $auxcompanies = $repository->load($criteria);
         $Companies =  array();
         foreach ($auxcompanies as $company) {
-            $objCompany = new CompanyRecord('CompanyID', $company->CompanyID);
+            $objCompany = new CompanyRecord('poscontrol', 'CompanyID', $company->CompanyID);            
             $Companies[] = $objCompany;
         };
         //retorna todas as empresas que satisfazem o criterio
@@ -39,13 +40,13 @@ class UsersRecord extends TRecord
     
     function get_CompanyGroup()
     {
-        $companygroup = new CompanyGroupRecord('CompanyGroupID',$this->CompanyGroupID);
+        $companygroup = new CompanyGroupRecord('poscontrol', 'CompanyGroupID',$this->CompanyGroupID);
         return $companygroup;
     }
 
     function get_AccessLevel()
     {
-        $acesslevel = new AccessLevelRecord('AccessLevelID',$this->AccessLevelID);
+        $acesslevel = new AccessLevelRecord('poscontrol', 'AccessLevelID',$this->AccessLevelID);
         return $acesslevel;
     }
 }
