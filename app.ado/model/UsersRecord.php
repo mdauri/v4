@@ -2,9 +2,13 @@
 namespace ado\model;
 
 use ado\core\TRecord;
-use ado\core\TCriteria;
+use ado\core\TTransaction;
 use ado\core\TFilter;
+use ado\core\TCriteria;
+use ado\core\TLoggerTXT;
 use ado\core\TRepository;
+use app\TApp;
+
 
 class CompanyGroupRecord extends TRecord{}
 class CompanyUsersRecord extends TRecord{}
@@ -15,9 +19,9 @@ class PosPdvConfigRecord extends TRecord{}
 class UsersRecord extends TRecord 
 {
     /*
-        * metodo get_companies()
-        * executado sempre que for acessada a propriedade "companies"
-        */
+    * metodo get_companies()
+    * executado sempre que for acessada a propriedade "companies"
+    */
     function get_Companies()
     {
         // cria um critério de seleção
@@ -26,12 +30,26 @@ class UsersRecord extends TRecord
         $criteria->add(new TFilter('UsersID','=',$this->UsersID));
 
         //instancia repositorio CompanyUsers
-        $repository = new TRepository('poscontrol','CompanyUsers');
+        $repository = new TRepository('poscontrolconfig','CompanyUsers');
 
         $auxcompanies = $repository->load($criteria);
         $Companies =  array();
         foreach ($auxcompanies as $company) {
-            $objCompany = new CompanyRecord('poscontrol', 'CompanyID', $company->CompanyID);            
+            $objCompany = new CompanyRecord('poscontrolconfig','CompanyID', $company->CompanyID);
+
+            $criteria1 = new TCriteria;
+            $criteria1->add(new TFilter('CompanyID', '=', $company->CompanyID));
+            $criteria1->add(new TFilter('Value', '=', 'S'));
+            $criteria1->add(new TFilter('Id', '=', 66));
+            $repository = new TRepository('poscontrol','PosPdvConfig');
+            $pospdvconfig = $repository->load($criteria1);
+            if ($pospdvconfig) {
+                $objCompany->NFCE = True;
+            } else {
+                $objCompany->NFCE = False;
+            }
+
+
             $Companies[] = $objCompany;
         };
         //retorna todas as empresas que satisfazem o criterio
@@ -40,13 +58,13 @@ class UsersRecord extends TRecord
     
     function get_CompanyGroup()
     {
-        $companygroup = new CompanyGroupRecord('poscontrol', 'CompanyGroupID',$this->CompanyGroupID);
+        $companygroup = new CompanyGroupRecord('poscontrolconfig','CompanyGroupID',$this->CompanyGroupID);
         return $companygroup;
     }
 
     function get_AccessLevel()
     {
-        $acesslevel = new AccessLevelRecord('poscontrol', 'AccessLevelID',$this->AccessLevelID);
+        $acesslevel = new AccessLevelRecord('poscontrolconfig','AccessLevelID',$this->AccessLevelID);
         return $acesslevel;
     }
 }

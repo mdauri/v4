@@ -14,7 +14,7 @@ use ado\core\TLoggerTXT;
 use app\TApp;
 use util\TW2Encrypter;
 
-use ado\user\TUserService;
+use ado\service\TUserService;
 
 $request = new Request();
 /*
@@ -32,6 +32,15 @@ if ($request->isPost()) {
             $qtTimeLimitPHP = $app->POSControlConfig->qtTimeLimit / 1000;
 
             $tw2_encrypter = new TW2Encrypter($app->POSControlConfig->token, $app->POSControlConfig->key);
+
+            //inicia transação com o banco PosControlConfig
+            TTransaction::opendb('poscontrolconfig');
+            //inicia transação com o banco PosControl
+            TTransaction::opendb('poscontrol');
+
+            //define o arquivo de LOG
+            TTransaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrol.txt'), 'poscontrol');
+            TTransaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrolconfig.txt'),'poscontrolconfig');
 
             $User = getUser($username);
             
@@ -118,6 +127,10 @@ if ($request->isPost()) {
                             'UserType'  => $User->AccessLevel->ShortName
                         ]
                     ];
+
+                    TTransaction::closedb('poscontrolconfig');
+                    TTransaction::closedb('poscontrol');
+
                     header('Content-type: application/json');
                     
                     $secretKey = base64_decode($app->JWT->key);
@@ -142,6 +155,10 @@ if ($request->isPost()) {
         } catch (Exception $e) {
             $unencodedArray = ['jwt' => $e->getMessage(), 'jwt1' => 'leo'];
             echo json_encode($unencodedArray);
+            
+            TTransaction::rollbackdb('poscontrol');
+            TTransaction::rollbackdb('poscontrolconfig');
+
             return;
             //header('HTTP/1.0 500 Internal Server Error');
         }
@@ -157,24 +174,17 @@ function getUser($username)
     //obtem objetos do banco de dados
     try
     {
-        //inicia transação com o banco PosControl
-        TTransaction::opendb('poscontrolconfig');
-        TTransaction::opendb('poscontrol');
-
-        //define o arquivo de LOG
-        TTransaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrol.txt'), 'poscontrol');
-        TTransaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrolconfig.txt'),'poscontrolconfig');
         
-        $userservice = new ado\model\TUserService;
+        $userservice = new TUserService;
         $user = $userservice->getUser($username);
 
         return $user;
     }
     catch(Exception $e)
     {
+        
         echo 'Erro ' . $e->getMessage();
-        TTransaction::rollbackdb('poscontrol');
-        TTransaction::rollbackdb('poscontrolconfig');
+
     }
 }
 
