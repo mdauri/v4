@@ -213,7 +213,7 @@ abstract class TRecord
     // obtem trasação ativa
     if ($conn = TTransaction::getdb($nomedb)) {
       //cria mensagem de log e executa a consulta
-      TTransaction::log($sql->getInstruction());
+      TTransaction::logdb($sql->getInstruction(),$nomedb);
       $result = $conn->Query($sql->getInstruction());
       // se retornou algum dado
       if ($result) {

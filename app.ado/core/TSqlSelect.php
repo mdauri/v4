@@ -7,6 +7,7 @@ namespace ado\core;
 final class TSqlSelect extends TSQLInstruction
 {
   private $columns;     //array de colunas a serem retornadas.
+  private $joins;  //array de joins
 
   /*
    * metodo addColumn
@@ -16,6 +17,15 @@ final class TSqlSelect extends TSQLInstruction
   public function addColumn($column)
   {
     $this->columns[] = $column;
+  }
+  /*
+   * metodo addJoinTable
+   * adiciona um JOIN no SELECT
+   * @param $join = join a ser utilizado
+   */
+  public function addJoin($join)
+  {
+    $this->joins[] = $join;
   }
   /*
    * metodo getInstruction()
@@ -29,6 +39,12 @@ final class TSqlSelect extends TSQLInstruction
     $this->sql .= implode(',',$this->columns);
     //adiciona na cláusula FROM o nome da tabela
     $this->sql .= ' FROM ' . $this->entity;
+
+    if ($this->joins) {
+      foreach ($this->joins as $join) {
+        $this->sql .= ' ' . $join;
+      }
+    }
 
     // obtem a cláusula WHERE do objeto criteria
     if ($this->criteria) {

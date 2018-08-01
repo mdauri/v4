@@ -9,8 +9,8 @@ use ado\core\TLoggerTXT;
 use ado\core\TRepository;
 use app\TApp;
 
+use ado\model\CompanyGroupRecord;
 
-class CompanyGroupRecord extends TRecord{}
 class CompanyUsersRecord extends TRecord{}
 class AccessLevelRecord extends TRecord{}
 class CompanyRecord extends TRecord{}

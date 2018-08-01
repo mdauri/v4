@@ -39,8 +39,8 @@ if ($request->isPost()) {
             TTransaction::opendb('poscontrol');
 
             //define o arquivo de LOG
-            TTransaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrol.txt'), 'poscontrol');
-            TTransaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrolconfig.txt'),'poscontrolconfig');
+            //TTransaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrol.txt'), 'poscontrol');
+            //Transaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrolconfig.txt'),'poscontrolconfig');
 
             $User = getUser($username);
             

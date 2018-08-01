@@ -26,11 +26,27 @@ final class TRepository
    * através de um cirtério de seleção e instanciá-los em memória
    * @param $criteria = objeto do tipo TCriteria
    */
-  function load(TCriteria $criteria)
+  function load(TCriteria $criteria, $isArray=NULL, $fields=NULL, $joins=NULL)
   {
     // instancia a instrução de SELECT
     $sql = new TSqlSelect;
-    $sql->addColumn('*');
+    
+    //atribuindo campos
+    if ($fields) {
+      foreach ($fields as $field) {
+        $sql->addColumn("$field");
+      }
+    } else {
+      $sql->addColumn('*');
+    }
+
+    //atribuindo tabelas para o join
+    if ($joins) {
+      foreach ($joins as $join) {
+        $sql->addJoin($join);
+      }
+    }
+        
     $sql->setEntity($this->class);
     // atribui o critério passado como parâmetro
     $sql->setCriteria($criteria);
@@ -58,7 +74,12 @@ final class TRepository
         //while ($row = $result->fetchObject($this->class . 'Record')) {
         while ($row = $result->fetchObject($this->fullyqualifiedclass . 'Record')) {
           //armazena no array $results;
-          $results[] = $row;
+          if ($isArray) {
+            $results[] = $row->toArray();
+          } else {
+            $results[] = $row;
+          }
+          
         }
       }
       return $results;
