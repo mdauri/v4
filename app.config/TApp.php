@@ -28,9 +28,33 @@ final class TApp
       // se nao existir, lança erro
       throw new \Exception("Arquivo app.config não encontrado");      
     }
-    
+    self::init($config);
+
     //retorna o objeto instanciado
-    return json_decode(json_encode($config), FALSE);;
+    return json_decode(json_encode($config), FALSE);
+  }
+
+  private static function init(&$config)
+  {
+    $config["POSControlConfig"]["ftp_root_local"] = $config["POSControlConfig"]["files_base_path_ftp"];
+    if ($config["POSControlConfig"]["is_ssl"] == 1) {
+      $config["POSControlConfig"]["prefHTTP"] = "https://";
+    } else {
+      $config["POSControlConfig"]["prefHTTP"] = "http://";
+    }
+    
+    $config["POSControlConfig"]["scripts_url"] = $config["POSControlConfig"]["prefHTTP"] . $config["POSControlConfig"]["hostSRV"] . "";
+
+    $config["POSControlConfig"]["webapp_host"] = $config["POSControlConfig"]["prefHTTP"] . $config["POSControlConfig"]["hostSRV"] . "/WebAPP/";
+    $config["POSControlConfig"]["webauth_host"] = $config["POSControlConfig"]["prefHTTP"] . $config["POSControlConfig"]["hostSRV"] . "/POSAuth/";
+
+    $config["POSControlConfig"]["images_path"] = $config["POSControlConfig"]["files_base_path"] . "repositorio\\images\\";
+    $config["POSControlConfig"]["dbs_path"] = $config["POSControlConfig"]["files_base_path"] . "repositorio\\dbs\\";
+
+    $config["POSControlConfig"]["queries_dir"] = $config["POSControlConfig"]["files_base_path"] . "bdsqlite\\###BDVersion###\\tables\\";
+    $config["POSControlConfig"]["drops_dir"] = $config["POSControlConfig"]["files_base_path"] . "bdsqlite\\###BDVersion###\\tables_drop\\";
+    $config["POSControlConfig"]["fields_dir"] = $config["POSControlConfig"]["files_base_path"] . "bdsqlite\\###BDVersion###\\fields\\";
+    $config["POSControlConfig"]["fields_cfg_dir"] = $config["POSControlConfig"]["files_base_path"] . "bdsqlite\\###BDVersion###\\fields_cfg\\";
   }
 
   public static function generateGuid($include_braces = false)

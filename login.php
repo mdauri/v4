@@ -29,6 +29,7 @@ if ($request->isPost()) {
     if ($username && $password) {
         try {
             $app = TApp::open();
+
             $qtTimeLimitPHP = $app->POSControlConfig->qtTimeLimit / 1000;
 
             $tw2_encrypter = new TW2Encrypter($app->POSControlConfig->token, $app->POSControlConfig->key);
