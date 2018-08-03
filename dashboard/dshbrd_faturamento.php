@@ -13,6 +13,7 @@ use ado\core\TLoggerTXT;
 use ado\model\TUsersRecord;
 use ado\service\TSecFunctionalityService;
 use ado\service\TSecFunctionalityAccessLevelService;
+use ado\service\TEventService;
 
 /*
  * Get all headers from the HTTP request
@@ -94,12 +95,12 @@ if ($authHeader) {
 
 function dashboardfaturamento($token, $activeCompany, $dashboardType, $graphType)
 {
-  $User = $Token->token->data->UserId;
-  $SysType = $Token->token->data->SYSType;
+  $User = $token->data->UserId;
+  $SysType = $token->data->SYSType;
     
   $Companies = array();
-  for ($i=0; $i < count($Token->token->data->Companies); $i++) {
-    array_push($Companies,$Token->token->data->Companies[$i]->CompanyID);
+  for ($i=0; $i < count($token->data->Companies); $i++) {
+    array_push($Companies,$token->data->Companies[$i]->CompanyID);
   }
   
   $CompaniesQRYIN = "'" . implode("','", $Companies) . "'";
@@ -110,7 +111,7 @@ function dashboardfaturamento($token, $activeCompany, $dashboardType, $graphType
   }
   $CompaniesQRY = substr($CompaniesQRY, 6);
 
-  $CompanyGroup = $Token->token->data->GrpId;
+  $CompanyGroup = $token->data->GrpId;
 
   if ($CompanyGroup == "OLDDE7125A0-42AA-BC19-099C-4525D8E09ED4"
   or $CompanyGroup == "5A0086E2-8DA3-358A-DDB5-31A7B5C29449"
@@ -122,98 +123,47 @@ function dashboardfaturamento($token, $activeCompany, $dashboardType, $graphType
     $SysType = "001_1";
   }
 
+  $events = getEvents($dashboardType, $SysType, $graphType, $CompanyGroup, $activeCompany);
+  
+  $listsaleitemservice = new TListSaleItemService;
   if ($dashboardType !== ":1") {
-    switch ($SysType) {
-      case "003":
-        $sqlEvent = "select * from Event where DatetimeBegin <= getdate() order by DatetimeBegin desc";
-        $stmtEvent = $conn->query($sqlEvent);
-        $rtrEvent = $stmtEvent->fetchAll(PDO::FETCH_ASSOC);
-        if ($graphType < 10) {
-            $curr_evnt = 0 + $graphType;
-        } else {
-            $curr_evnt = $graphType;
-        }
-        $varFilter = "  DatetimeSale >= '" . $rtrEvent[$curr_evnt]["DatetimeBegin"] . "' and DatetimeSale <= '" . $rtrEvent[$curr_evnt]["DatetimeEnd"] . "'";
-        $varGroup = "convert(char(2), convert(time, DatetimeSale))";
-        break;
-
-      case "001_1":
-        $sqlEvent = "select * from Event where DatetimeBegin <= getdate() and CompanyGroupID = '" . $CompanyGroup . "'  order by DatetimeBegin desc";
-        break;
-
-      case "005":
-        $sqlEvent = "select * from Event where DatetimeBegin <= getdate() and CompanyGroupID = '" . $CompanyGroup . "'  order by DatetimeBegin desc";
-        break;
-
-      case "007":
-        $sqlEvent = "select * from Event where DatetimeBegin <= getdate() and CompanyGroupID = '" . $CompanyGroup . "'  order by DatetimeBegin desc";
-        break;
-      
-      case "008":
-        $sqlEvent = "select * from Event where DatetimeBegin <= getdate() and CompanyGroupID = '" . $CompanyGroup . "'  order by DatetimeBegin desc";
-        break;
-      
-      default:
-        $sqlEvent = "select * from Event where DatetimeBegin <= getdate() and CompanyID = '" . $activeCompany . "' order by DatetimeBegin desc";
-        break;
-    }
-    $stmtEvent = $conn->query($sqlEvent);
-    $rtrEvent = $stmtEvent->fetchAll(PDO::FETCH_ASSOC);
-    switch ($graphType) {
-      case '99':
-        switch ($SysType) {
-          case '001_1':
-            $sqlEvent = "select * from Event where DatetimeBegin <= getdate() and CompanyGroupID = '" . $CompanyGroup . "'  order by DatetimeBegin";
-            break;
-          
-          case '007':
-            $sqlEvent = "select * from Event where DatetimeBegin <= getdate() and CompanyGroupID = '" . $CompanyGroup . "'  order by DatetimeBegin";
-            break;
-          
-          default:
-            $sqlEvent = "select * from Event where DatetimeBegin <= getdate() and CompanyID = '" . $activeCompany . "' order by DatetimeBegin";
-            break;
-        }
-        $stmtEvent = $conn->query($sqlEvent);
-        $rtrEvent = $stmtEvent->fetchAll(PDO::FETCH_ASSOC);
-        $sql = "";
-        for ($i=0;$i<count($rtrEvent);$i++) {
-          if ($i > 0) {
-              $sql .= " union ";
-          }
-          $sql .= "select";
-          $sql .= "     '" . $rtrEvent[$i]["Name"] . "' XLine, sum(AmntTotal) AmntTotal";
-          $sql .= " from";
-          $sql .= "   _list_sale_items";
-          $sql .= " where";
-          if ($activeCompany == -1) {
-              $sql .= "    CompanyID in (" . $currCompaniesQRYIN . ")";
-          } else {
-              $sql .= "    CompanyID = '" . $activeCompany . "'";
-          }
-          $sql .= " and " . "  DatetimeSale >= '" . $rtrEvent[$i]["DatetimeBegin"] . "' and DatetimeSale <= '" . $rtrEvent[$i]["DatetimeEnd"] . "'";
-        }
-        break;      
-      default:
-        if ($graphType < 10) {
+    if ($SysType == "003") {      
+      if ($graphType < 10) {
           $curr_evnt = 0 + $graphType;
-        }else {
+      } else {
           $curr_evnt = $graphType;
-        }
-        $varFilter = "  DatetimeSale >= '" . $rtrEvent[$curr_evnt]["DatetimeBegin"] . "' and DatetimeSale <= '" . $rtrEvent[$curr_evnt]["DatetimeEnd"] . "'";
-        $varGroup = "convert(char(13), convert(datetime, DatetimeSale), 120), convert(char(2), convert(time, DatetimeSale))";
-        break;
-    }
+      }
+      //$varGroup = "convert(char(2), convert(time, DatetimeSale))";
+      //$varFilter = "  DatetimeSale >= '" . $events[$curr_evnt]["DatetimeBegin"] . "' and DatetimeSale <= '" . $events[$curr_evnt]["DatetimeEnd"] . "'";
+      $event = $events[$curr_evnt];
+      $DatetimeBegin = $events[$curr_evnt]["DatetimeBegin"];
+      $DatetimeEnd = $events[$curr_evnt]["DatetimeEnd"];
+      $listsaleitems = $listsaleitemservice->getListSaleItems1($event, $SysType, $currCompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
 
+    } else {    
+      if ($graphType < 10) {
+        $curr_evnt = 0 + $graphType;
+      }else {
+        $curr_evnt = $graphType;
+      }
+      //$varGroup = "convert(char(13), convert(datetime, DatetimeSale), 120), convert(char(2), convert(time, DatetimeSale))";
+      //$varFilter = "  DatetimeSale >= '" . $rtrEvent[$curr_evnt]["DatetimeBegin"] . "' and DatetimeSale <= '" . $rtrEvent[$curr_evnt]["DatetimeEnd"] . "'";
+      $event = $events[$curr_evnt];
+      $DatetimeBegin = $events[$curr_evnt]["DatetimeBegin"];
+      $DatetimeEnd = $events[$curr_evnt]["DatetimeEnd"];
+      $listsaleitems = $listsaleitemservice->getListSaleItems2($SysType, $currCompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
+    }
   } else {
     switch ($graphType) {
       case 1:
-        $varGroup = "convert(char(10), convert(date, DatetimeSale)), convert(varchar(5),CONVERT(date,DatetimeSale,106),103)";
-        $varFilter = "   DatetimeSale >= DATEADD(DAY, -9, convert(date, switchoffset(SYSDATETIMEOFFSET(), '-03:00')))";
+        //$varGroup = "convert(char(10), convert(date, DatetimeSale)), convert(varchar(5),CONVERT(date,DatetimeSale,106),103)";
+        //$varFilter = "   DatetimeSale >= DATEADD(DAY, -9, convert(date, switchoffset(SYSDATETIMEOFFSET(), '-03:00')))";
+        $listsaleitems = $listsaleitemservice->getListSaleItems3($SysType, $currCompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
         break;
       case 2:
         $varGroup = "convert(char(10), convert(date, DatetimeSale)), convert(varchar(5),CONVERT(date,DatetimeSale,106),103)";
         $varFilter = "   DatetimeSale >= DATEADD(DAY, -29, convert(date, switchoffset(SYSDATETIMEOFFSET(), '-03:00')))";
+        $listsaleitems = $listsaleitemservice->getListSaleItems4($SysType, $currCompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
         break;
       case 3:
         $varGroup = "convert(char(7), convert(date, DatetimeSale)), substring(convert(varchar(10),CONVERT(date,DatetimeSale,106),103), 4, 7)";
@@ -228,11 +178,20 @@ function dashboardfaturamento($token, $activeCompany, $dashboardType, $graphType
   }
 
   $tbl = array();
+  if ($graphType == 99) {
+    foreach ($events as $event) {
+      if ($activeCompany == -1) {
+        $listsaleitems[] = $listsaleitemservice->getListSaleItemsActiveCompany($activeCompany, $event->Name, $event->DatetimeBegin, $event->DatetimeEnd);
+      } else {  
+        $listsaleitems[] = $listsaleitemservice->getListSaleItemsCompanies($currCompaniesQRYIN, $event->Name, $event->DatetimeBegin, $event->DatetimeEnd);
+      }
+    }
+  }
   if ($graphType <> 99) {
       $sql = "select";
       $sql .= "     " . $varGroup . " XLine, sum(AmntTotal) AmntTotal";
       $sql .= " from";
-      $sql .= "   _list_sale_items";
+      $sql .= "  _list_sale_items";
       $sql .= " where";
       if ($SysType !== "003" and $SysType !== "999") {
           if ($activeCompany == -1) {
@@ -249,6 +208,7 @@ function dashboardfaturamento($token, $activeCompany, $dashboardType, $graphType
       $sql .= "   " . $varGroup;
       $sql .= " order by";
       $sql .= "   " . $varGroup;
+
   }
 
   try {      
@@ -264,8 +224,42 @@ function dashboardfaturamento($token, $activeCompany, $dashboardType, $graphType
   } catch( PDOException $Exception ) {
       throw new Exception( $Exception->getMessage(),$Exception->getCode());
   }
-
   
 }
 
+function getEvents($dashboardType, $SysType, $graphType, $CompanyGroup, $activeCompany)
+{
+  $eventservice = new TEventService;
+  if ($dashboardType !== ":1") {
+    switch ($SysType) {
+      case "003":
+        $events = $eventservice->getEventsbyDatetimeBegin();        
+        break;
+
+      case "001_1":
+      case "005":
+      case "007":      
+      case "008":
+        $events = $eventservice->getEventsbyDatetimeBeginCompanyGroup($CompanyGroup);
+        break;
+      
+      default:
+        $events = $eventservice->getEventsbyDatetimeBeginCompany($activeCompany);        
+        break;
+    }
+    if ($graphType = '99') {
+      switch ($SysType) {
+        case '001_1':         
+        case '007':            
+          $events = $eventservice->getEventsbyDatetimeBeginCompanyGroupAsc($CompanyGroup);
+          break;
+        
+        default:
+          $events = $eventservice->getEventsbyDatetimeBeginCompanyAsc($activeCompany);        
+          break;
+      }
+    }
+  }
+  return $events;
+}
 ?>

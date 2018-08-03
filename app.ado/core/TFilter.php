@@ -51,6 +51,10 @@ class TFilter extends TExpression
     elseif (is_string($value)) {
       //adiciona aspas
       $result = "'$value'";
+      //feita para tratar as instruções SQL diretas
+      if (substr($value,0,1)==='$') {
+        $result = substr($value,1,strlen($value)-1);
+      }
     }
     //caso seja um valor nulo
     elseif (is_null($value)) {
