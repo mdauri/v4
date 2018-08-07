@@ -14,7 +14,7 @@ use ado\model\TUsersRecord;
 use ado\service\TSecFunctionalityService;
 use ado\service\TSecFunctionalityAccessLevelService;
 use ado\service\TEventService;
-use ado\service\TListSaleItemService;
+use ado\service\TListSalePaymentTypeService;
 
 /*
  * Get all headers from the HTTP request
@@ -53,7 +53,7 @@ if ($authHeader) {
             $dashboardType = $_GET["dsh_type"];
             $graphType = $_GET["graph_type"];
 
-            $tbl = dashboardfaturamento($token, $activeCompany, $dashboardType, $graphType);
+            $tbl = dashboardformapagamento($token, $activeCompany, $dashboardType, $graphType);
 
             TTransaction::closedb('poscontrolconfig');
             TTransaction::closedb('poscontrol'); 
@@ -92,7 +92,7 @@ if ($authHeader) {
     echo 'Token not found in request';
 }
 
-function dashboardfaturamento($token, $activeCompany, $dashboardType, $graphType)
+function dashboardformapagamento($token, $activeCompany, $dashboardType, $graphType)
 {
   $User = $token->data->UserId;
   $SysType = $token->data->SYSType;
@@ -122,7 +122,7 @@ function dashboardfaturamento($token, $activeCompany, $dashboardType, $graphType
     $SysType = "001_1";
   }
   
-  $listsaleitemservice = new TListSaleItemService;
+  $listsalepaymenttypeservice = new TListSalePaymentTypeService;
   if ($dashboardType !== ":1") {
     $events = getEvents($dashboardType, $SysType, $graphType, $CompanyGroup, $activeCompany);
     if ($graphType < 10) {
@@ -132,42 +132,28 @@ function dashboardfaturamento($token, $activeCompany, $dashboardType, $graphType
     }
     if ($graphType == 99) {
       $curr_evnt = count($events)-1;
-    }
+    }    
     $event = $events[$curr_evnt];
     $DatetimeBegin = $events[$curr_evnt]->DatetimeBegin;
     $DatetimeEnd = $events[$curr_evnt]->DatetimeEnd;
     if ($SysType == "003") {      
-      //$varGroup = "convert(char(2), convert(time, DatetimeSale))";
-      //$varFilter = "  DatetimeSale >= '" . $events[$curr_evnt]["DatetimeBegin"] . "' and DatetimeSale <= '" . $events[$curr_evnt]["DatetimeEnd"] . "'";      
-      $listsaleitems = $listsaleitemservice->getListSaleItems1($event, $SysType, $CompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
-
+      $listsaleitems = $listsalepaymenttypeservice->getListSaleItems1($event, $SysType, $CompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
     } else {
-      //$varGroup = "convert(char(13), convert(datetime, DatetimeSale), 120), convert(char(2), convert(time, DatetimeSale))";
-      //$varFilter = "  DatetimeSale >= '" . $rtrEvent[$curr_evnt]["DatetimeBegin"] . "' and DatetimeSale <= '" . $rtrEvent[$curr_evnt]["DatetimeEnd"] . "'";
-      $listsaleitems = $listsaleitemservice->getListSaleItems2($SysType, $CompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
+      $listsaleitems = $listsalepaymenttypeservice->getListSaleItems2($SysType, $CompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
     }
   } else {
     switch ($graphType) {
       case 1:
-        //$varGroup = "convert(char(10), convert(date, DatetimeSale)), convert(varchar(5),CONVERT(date,DatetimeSale,106),103)";
-        //$varFilter = "   DatetimeSale >= DATEADD(DAY, -9, convert(date, switchoffset(SYSDATETIMEOFFSET(), '-03:00')))";
-        $listsaleitems = $listsaleitemservice->getListSaleItems3($SysType, $CompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
+        $listsaleitems = $listsalepaymenttypeservice->getListSaleItems3($SysType, $CompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
         break;
       case 2:
-        //$varGroup = "convert(char(10), convert(date, DatetimeSale)), convert(varchar(5),CONVERT(date,DatetimeSale,106),103)";
-        //$varFilter = "   DatetimeSale >= DATEADD(DAY, -29, convert(date, switchoffset(SYSDATETIMEOFFSET(), '-03:00')))";
-        $listsaleitems = $listsaleitemservice->getListSaleItems4($SysType, $CompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
+        $listsaleitems = $listsalepaymenttypeservice->getListSaleItems4($SysType, $CompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
         break;
       case 3:
-        //$varGroup = "convert(char(7), convert(date, DatetimeSale)), substring(convert(varchar(10),CONVERT(date,DatetimeSale,106),103), 4, 7)";
-        //$varFilter = "   DatetimeSale >= convert(char(4), switchoffset(SYSDATETIMEOFFSET(), '-03:00')) + '-01-01'";
-        $listsaleitems = $listsaleitemservice->getListSaleItems5($SysType, $CompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
+        $listsaleitems = $listsalepaymenttypeservice->getListSaleItems5($SysType, $CompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
         break;
-      
       default:
-        //$varGroup = "convert(char(2), convert(time, DatetimeSale))";
-        //$varFilter = "   DatetimeSale >= convert(date, switchoffset(SYSDATETIMEOFFSET(), '-03:00'))";
-        $listsaleitems = $listsaleitemservice->getListSaleItems5($SysType, $CompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
+        $listsaleitems = $listsalepaymenttypeservice->getListSaleItems5($SysType, $CompaniesQRYIN, $activeCompany, $DatetimeBegin, $DatetimeEnd);
         break;
     }
   }
@@ -176,20 +162,21 @@ function dashboardfaturamento($token, $activeCompany, $dashboardType, $graphType
   if ($graphType == 99) {
     foreach ($events as $event) {
       if ($activeCompany == -1) {
-        $listsaleitems[] = $listsaleitemservice->getListSaleItemsActiveCompany($activeCompany, $event->Name, $event->DatetimeBegin, $event->DatetimeEnd);
+        $listsaleitems[] = $listsalepaymenttypeservice->getListSaleItemsActiveCompany($activeCompany, $event->Name, $event->DatetimeBegin, $event->DatetimeEnd);
       } else {  
-        $listsaleitems[] = $listsaleitemservice->getListSaleItemsCompanies($currCompaniesQRYIN, $event->Name, $event->DatetimeBegin, $event->DatetimeEnd);
+        $listsaleitems[] = $listsalepaymenttypeservice->getListSaleItemsCompanies($currCompaniesQRYIN, $event->Name, $event->DatetimeBegin, $event->DatetimeEnd);
       }
     }
   }  
 
   try {          
-
+    $currXLine = "";
+    $currTot = 0;
+    $graphs = "";
     for ($i = 0; $i < count($listsaleitems); ++$i) {
-      $tbl["dataProvider"][$i]["xline"] = $listsaleitems[$i]["XLine"];
-      $tbl["dataProvider"][$i]["income"] = number_format($listsaleitems[$i]["AmntTotal"], 2, ".", "");
+      $tbl["dataProvider"][$i]["XLine"] = $listsaleitems[$i]["XLine"];
+      $tbl["dataProvider"][$i]["AmnTotal"] = number_format($listsaleitems[$i]["AmntTotal"], 2, ".", "");
     }
-  
     return $tbl;
 
   } catch( PDOException $Exception ) {
@@ -207,9 +194,7 @@ function getEvents($dashboardType, $SysType, $graphType, $CompanyGroup, $activeC
         $events = $eventservice->getEventsbyDatetimeBegin();        
         break;
 
-      case "001_1":
-      //case "005":
-      //case "007":      
+      case "001_1":      
       case "008":
         $events = $eventservice->getEventsbyDatetimeBeginCompanyGroup($CompanyGroup);
         break;

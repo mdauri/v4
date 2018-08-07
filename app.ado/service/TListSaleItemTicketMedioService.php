@@ -6,7 +6,7 @@ use ado\core\TCriteria;
 use ado\core\TRepository;
 use app\TApp;
 
-final class TListSaleItemService {
+final class TListSaleItemTicketMedioService {
 
     function getListSaleItemsActiveCompany($activeCompany, $eventName, $DatetimeBegin, $DatetimeEnd)
     {        
@@ -18,11 +18,11 @@ final class TListSaleItemService {
         $criteria->add(new TFilter('DatetimeSale', '<=', $DatetimeEnd));
         $fields = array(
           "$eventName . XLine",
-          "sum(AmntTotal) AmntTotal"
+          "sum(AmntTotal)/count(distinct SaleID) TktMedio"
         );
         
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        $repository = new TRepository('poscontrol','_list_sale_items_tktmedio');
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -39,11 +39,11 @@ final class TListSaleItemService {
         $criteria->add(new TFilter('DatetimeSale', '<=', $DatetimeEnd));
         $fields = array(
           "$eventName . XLine",
-          "sum(AmntTotal) AmntTotal"
+          "sum(AmntTotal)/count(distinct SaleID) TktMedio"
         );
         
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        $repository = new TRepository('poscontrol','_list_sale_items_tktmedio');
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -68,11 +68,11 @@ final class TListSaleItemService {
         $criteria->setProperty('order', 'convert(char(2), convert(time, DatetimeSale))');
         $fields = array(
           "convert(char(2), convert(time, DatetimeSale))" . " XLine",
-          "sum(AmntTotal) AmntTotal"
+          "sum(AmntTotal)/count(distinct SaleID) TktMedio"
         );
         
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        $repository = new TRepository('poscontrol','_list_sale_items_tktmedio');
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -98,11 +98,11 @@ final class TListSaleItemService {
         $fields = array(
           "convert(char(13), convert(datetime, DatetimeSale), 120)",
           "convert(char(2), convert(time, DatetimeSale))" . " XLine",
-          "sum(AmntTotal) AmntTotal"
+          "sum(AmntTotal)/count(distinct SaleID) TktMedio"
         );
         
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        $repository = new TRepository('poscontrol','_list_sale_items_tktmedio');
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -128,11 +128,11 @@ final class TListSaleItemService {
         $fields = array(
           "convert(char(10), convert(date, DatetimeSale))",
           "convert(varchar(5),CONVERT(date,DatetimeSale,106),103)" . " XLine",
-          "sum(AmntTotal) AmntTotal"
+          "sum(AmntTotal)/count(distinct SaleID) TktMedio"
         );
         
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        $repository = new TRepository('poscontrol','_list_sale_items_tktmedio');
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -158,11 +158,11 @@ final class TListSaleItemService {
         $fields = array(
           "convert(char(10), convert(date, DatetimeSale))",
           "convert(varchar(5),CONVERT(date,DatetimeSale,106),103)" . " XLine",
-          "sum(AmntTotal) AmntTotal"
+          "sum(AmntTotal)/count(distinct SaleID) TktMedio"
         );
         
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        $repository = new TRepository('poscontrol','_list_sale_items_tktmedio');
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -188,11 +188,11 @@ final class TListSaleItemService {
         $fields = array(
           "convert(char(7), convert(date, DatetimeSale))",
           "substring(convert(varchar(10),CONVERT(date,DatetimeSale,106),103), 4, 7)" . " XLine",
-          "sum(AmntTotal) AmntTotal"
+          "sum(AmntTotal)/count(distinct SaleID) TktMedio"
         );
         
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        $repository = new TRepository('poscontrol','_list_sale_items_tktmedio');
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -217,11 +217,11 @@ final class TListSaleItemService {
         $criteria->setProperty('order', 'convert(char(2), convert(time, DatetimeSale))');
         $fields = array(
           "convert(char(2), convert(time, DatetimeSale))" . " XLine",
-          "sum(AmntTotal) AmntTotal"
+          "sum(AmntTotal)/count(distinct SaleID) TktMedio"
         );
         
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        $repository = new TRepository('poscontrol','_list_sale_items_tktmedio');
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);
         return $saleitems;

@@ -5,8 +5,9 @@ use ado\core\TFilter;
 use ado\core\TCriteria;
 use ado\core\TRepository;
 use app\TApp;
+use ado\model\CompanyRecord;
 
-final class TListSaleItemService {
+final class TListSalePaymentTypeService {
 
     function getListSaleItemsActiveCompany($activeCompany, $eventName, $DatetimeBegin, $DatetimeEnd)
     {        
@@ -21,8 +22,14 @@ final class TListSaleItemService {
           "sum(AmntTotal) AmntTotal"
         );
         
+        $objCompany = new CompanyRecord('poscontrolconfig','CompanyID', $activeCompany);
+        
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        if ($objCompany->NFCE) {
+          $repository = new TRepository('poscontrol','_list_nfc_company_pos_payment_type');
+        } else {
+          $repository = new TRepository('poscontrol','_list_sale_paymenttype');
+        }
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -42,8 +49,14 @@ final class TListSaleItemService {
           "sum(AmntTotal) AmntTotal"
         );
         
+        $objCompany = new CompanyRecord('poscontrolconfig','CompanyID', $activeCompany);
+        
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        if ($objCompany->NFCE) {
+          $repository = new TRepository('poscontrol','_list_nfc_company_pos_payment_type');
+        } else {
+          $repository = new TRepository('poscontrol','_list_sale_paymenttype');
+        }
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -71,8 +84,14 @@ final class TListSaleItemService {
           "sum(AmntTotal) AmntTotal"
         );
         
+        $objCompany = new CompanyRecord('poscontrolconfig','CompanyID', $activeCompany);
+        
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        if ($objCompany->NFCE) {
+          $repository = new TRepository('poscontrol','_list_nfc_company_pos_payment_type');
+        } else {
+          $repository = new TRepository('poscontrol','_list_sale_paymenttype');
+        }
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -93,16 +112,21 @@ final class TListSaleItemService {
         }
         $criteria->add(new TFilter('DatetimeSale', '>=', '$CONVERT'. "(DATETIME,'" . $DatetimeBegin . "',120)"));
         $criteria->add(new TFilter('DatetimeSale', '<=', '$CONVERT'. "(DATETIME,'" . $DatetimeEnd . "',120)"));
-        $criteria->setProperty('group', 'convert(char(13), convert(datetime, DatetimeSale), 120), convert(char(2), convert(time, DatetimeSale))');
-        $criteria->setProperty('order', 'convert(char(13), convert(datetime, DatetimeSale), 120), convert(char(2), convert(time, DatetimeSale))');
+        $criteria->setProperty('group', 'PaymentTypeName');
+        $criteria->setProperty('order', 'PaymentTypeName');
         $fields = array(
-          "convert(char(13), convert(datetime, DatetimeSale), 120)",
-          "convert(char(2), convert(time, DatetimeSale))" . " XLine",
+          "PaymentTypeName" . " XLine",
           "sum(AmntTotal) AmntTotal"
         );
         
+        $objCompany = new CompanyRecord('poscontrolconfig','CompanyID', $activeCompany);
+        
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        if ($objCompany->NFCE) {
+          $repository = new TRepository('poscontrol','_list_nfc_company_pos_payment_type');
+        } else {
+          $repository = new TRepository('poscontrol','_list_sale_paymenttype');
+        }
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -131,8 +155,14 @@ final class TListSaleItemService {
           "sum(AmntTotal) AmntTotal"
         );
         
+        $objCompany = new CompanyRecord('poscontrolconfig','CompanyID', $activeCompany);
+        
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        if ($objCompany->NFCE) {
+          $repository = new TRepository('poscontrol','_list_nfc_company_pos_payment_type');
+        } else {
+          $repository = new TRepository('poscontrol','_list_sale_paymenttype');
+        }
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -161,8 +191,14 @@ final class TListSaleItemService {
           "sum(AmntTotal) AmntTotal"
         );
         
+        $objCompany = new CompanyRecord('poscontrolconfig','CompanyID', $activeCompany);
+        
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        if ($objCompany->NFCE) {
+          $repository = new TRepository('poscontrol','_list_nfc_company_pos_payment_type');
+        } else {
+          $repository = new TRepository('poscontrol','_list_sale_paymenttype');
+        }
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -191,8 +227,14 @@ final class TListSaleItemService {
           "sum(AmntTotal) AmntTotal"
         );
         
+        $objCompany = new CompanyRecord('poscontrolconfig','CompanyID', $activeCompany);
+        
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        if ($objCompany->NFCE) {
+          $repository = new TRepository('poscontrol','_list_nfc_company_pos_payment_type');
+        } else {
+          $repository = new TRepository('poscontrol','_list_sale_paymenttype');
+        }
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);        
         return $saleitems;
@@ -220,8 +262,14 @@ final class TListSaleItemService {
           "sum(AmntTotal) AmntTotal"
         );
         
+        $objCompany = new CompanyRecord('poscontrolconfig','CompanyID', $activeCompany);
+        
         //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','_list_sale_items');
+        if ($objCompany->NFCE) {
+          $repository = new TRepository('poscontrol','_list_nfc_company_pos_payment_type');
+        } else {
+          $repository = new TRepository('poscontrol','_list_sale_paymenttype');
+        }
         // retorna todos os objetos que satisfem o critério
         $saleitems = $repository->load($criteria,true,$fields);
         return $saleitems;

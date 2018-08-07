@@ -53,11 +53,14 @@ final class TSqlSelect extends TSQLInstruction
         $this->sql .= ' WHERE ' . $expression;
       }
       // obtem as propriedades do critério
+      $group = $this->criteria->getProperty('group');
       $order = $this->criteria->getProperty('order');
       $limit = $this->criteria->getProperty('limit');
       $offset = $this->criteria->getProperty('offset');
-
-      //obtem a ordenação do SELECT
+      
+      if ($group) {
+        $this->sql .= ' GROUP BY ' . $group;
+      }
       if ($order) {
         $this->sql .= ' ORDER BY ' . $order;
       }
@@ -67,6 +70,7 @@ final class TSqlSelect extends TSQLInstruction
       if ($offset) {
         $this->sql .= ' OFFSET ' . $offset;
       }
+      
     }
     return $this->sql;
   } 

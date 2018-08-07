@@ -13,7 +13,7 @@ use ado\model\CompanyGroupRecord;
 
 class CompanyUsersRecord extends TRecord{}
 class AccessLevelRecord extends TRecord{}
-class CompanyRecord extends TRecord{}
+//class CompanyRecord extends TRecord{}
 class PosPdvConfigRecord extends TRecord{}
 
 class UsersRecord extends TRecord 
