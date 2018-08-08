@@ -123,7 +123,7 @@ function dashboardticketmedio($token, $activeCompany, $dashboardType, $graphType
   }
   
   $listsaleitemticketmedioservice = new TListSaleItemTicketMedioService;
-  if ($dashboardType !== ":1") {
+  if (isset($dashboardType) and $dashboardType !== ":1") {
     $events = getEvents($dashboardType, $SysType, $graphType, $CompanyGroup, $activeCompany);
     if ($graphType < 10) {
       $curr_evnt = 0 + $graphType;
