@@ -21,6 +21,12 @@ use ado\service\TListSaleItemPosService;
  */
 $request = new Request();
 
+if ($request->isOptions()) {
+  //$this->header = header('HTTP/1.0 200 OK');
+  header('HTTP/1.0 200 OK');
+  return;
+}
+
 $authHeader = $request->getHeader('authorization');
 /*
   * Look for the 'authorization' header
@@ -168,7 +174,7 @@ function dashboardtopsale($token, $activeCompany, $dashboardType, $topsaleType)
 
   $tbl = array();
 
-  $tbl["rtrevent"] = $rtrEvent;
+  $tbl["rtrevent"] = $events; //$rtrEvent;
   $tbl["rtrTopSale"] = $rtrTopSale;
   $tbl["rtrTopSaleHD"] = $rtrTopSaleHD;
 

@@ -13,7 +13,8 @@ use app\TApp;
 $request = new Request();
 
 if ($request->isOptions()) {
-    $this->header = header('HTTP/1.0 200 OK');
+    //$this->header = header('HTTP/1.0 200 OK');
+    header('HTTP/1.0 200 OK');
     return;
 }
 
