@@ -162,7 +162,7 @@ function dashboardsalesfull($token, $activeCompany, $dashboardType, $topsaleType
     default:
       $rtrTopSale = $saleitemproductpgroupposuserservice->getTopSale1($DatetimeBegin, $DatetimeEnd, $Companies, $activeCompany);
       $rtrTopClosedSale = $closeddrawservice->getTopClosedSale2($DatetimeBegin, $DatetimeEnd, $Companies, $activeCompany);
-      $rtrTopOpenSale = $opendrawservice->getTopOpenSale1($DatetimeBegin, $DatetimeEnd, $Companies, $activeCompany);
+      $rtrTopOpenSale = $opendrawservice->getTopOpenSale($DatetimeBegin, $DatetimeEnd, $Companies, $activeCompany);
       $rtrTopClosedSale1 = $closeddrawservice->getTopClosedSale3($DatetimeBegin, $DatetimeEnd, $Companies, $activeCompany);
       break;
   }

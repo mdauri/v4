@@ -16,7 +16,7 @@ final class TSecFunctionalityService {
         $criteria = new TCriteria;
         //filtra por username
         $criteria->add(new TFilter('SecFunctionalityType', '=', '6'));
-        $criteria->setProperty('ORDER', 'SecFunctionalityOrder');
+        $criteria->setProperty('order', 'SecParentFunctionalityId, SecFunctionalityOrder, SecFunctionalityURL DESC');
         //instancia um repositorio para usuário
         $repository = new TRepository('poscontrolconfig','SecFunctionality');
         // retorna todos os objetos que satisfem o critério

@@ -69,8 +69,8 @@ if ($authHeader) {
               //inicia transação com o banco PosControl
               TTransaction::opendb('poscontrol');
               //define o arquivo de LOG
-              //TTransaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrol.txt'), 'poscontrol');
-              //TTransaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrolconfig.txt'),'poscontrolconfig');
+              TTransaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrol.txt'), 'poscontrol');
+              TTransaction::setLoggerdb(new TLoggerTXT('c:\temp\poscontrolconfig.txt'),'poscontrolconfig');
 
               $MENU = get_menu($UsersID);
 

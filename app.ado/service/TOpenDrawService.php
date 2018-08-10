@@ -29,7 +29,7 @@ final class TOpenDrawService {
           "PropertyNumber", 
           "Opendraw.Amount Val", 
           "convert(nvarchar, DatetimeOpenDraw, 103) + ' ' + convert(nvarchar(5), convert(time, DatetimeOpenDraw))  DatetimeOpenDraw"
-        );
+        );        
 
         $joins = array(
           "inner join PosPdv on substring(Opendraw.OpenDrawPosCodeID, 1, 2) = 'FC' and Opendraw.PosPdvID = PosPdv.PosPdvID and Opendraw.CompanyID = PosPdv.CompanyID"
@@ -43,32 +43,38 @@ final class TOpenDrawService {
         
     }
 
-    function getTopOpenSale1($Companies, $activeCompany)
-    {        
+    // function getTopOpenSale1($Companies, $activeCompany)
+    // {        
         
-        $criteria = new TCriteria;
-        //filtra por username
-        $criteria->add(new TFilter('DatetimeOpenDraw', '>=', '$CONVERT' . "(date, switchoffset(SYSDATETIMEOFFSET(), '-03:00'))"));
+    //     $criteria = new TCriteria;
+    //     //filtra por username
+    //     $criteria->add(new TFilter('DatetimeOpenDraw', '>=', '$CONVERT' . "(date, switchoffset(SYSDATETIMEOFFSET(), '-03:00'))"));
         
-        $criteria->add(new TFilter('PropertyNumber', '<>', 'Property #'));
-        if ($activeCompany == -1) {
-          $criteria->add(new TFilter('Opendraw.CompanyID', 'IN', $Companies));
-        } else {
-          $criteria->add(new TFilter('Opendraw.CompanyID', '=', $activeCompany));
-        }
-        $criteria->setProperty('order', 'PropertyNumber');
-        $criteria->setProperty('group', 'PropertyNumber, Opendraw.DatetimeOpenDraw');
+    //     $criteria->add(new TFilter('PropertyNumber', '<>', 'Property #'));
+    //     if ($activeCompany == -1) {
+    //       $criteria->add(new TFilter('Opendraw.CompanyID', 'IN', $Companies));
+    //     } else {
+    //       $criteria->add(new TFilter('Opendraw.CompanyID', '=', $activeCompany));
+    //     }
+    //     $criteria->setProperty('order', 'PropertyNumber');
+    //     $criteria->setProperty('group', 'PropertyNumber, Opendraw.DatetimeOpenDraw');
 
-        $joins = array(
-          "inner join PosPdv on substring(Opendraw.OpenDrawPosCodeID, 1, 2) = 'FC' and Opendraw.PosPdvID = PosPdv.PosPdvID and Opendraw.CompanyID = PosPdv.CompanyID"
-        );
+    //     $fields = array(
+    //       "PropertyNumber", 
+    //       "Opendraw.Amount Val", 
+    //       "convert(nvarchar, DatetimeOpenDraw, 103) + ' ' + convert(nvarchar(5), convert(time, DatetimeOpenDraw))  DatetimeOpenDraw"
+    //     );
+
+    //     $joins = array(
+    //       "inner join PosPdv on substring(Opendraw.OpenDrawPosCodeID, 1, 2) = 'FC' and Opendraw.PosPdvID = PosPdv.PosPdvID and Opendraw.CompanyID = PosPdv.CompanyID"
+    //     );
         
-        //instancia um repositorio para usuário
-        $repository = new TRepository('poscontrol','Opendraw');
-        // retorna todos os objetos que satisfem o critério
-        $events = $repository->load($criteria,true,$fields,$joins);        
-        return $events;
+    //     //instancia um repositorio para usuário
+    //     $repository = new TRepository('poscontrol','Opendraw');
+    //     // retorna todos os objetos que satisfem o critério
+    //     $events = $repository->load($criteria,true,$fields,$joins);        
+    //     return $events;
         
-    }
+    // }
 }
 ?>
